@@ -1,93 +1,61 @@
 package main
 
 import (
+	"flag"
 	"fmt"
-	"strconv"
+	"time"
 )
 
-type hello struct {
-	name string
-	age  int
+type Task struct {
+	Title       string
+	Completed   bool
+	CreatedTime time.Time
+}
+
+type Todos []*Task
+
+func (t *Todos) add(title string) {
+	fmt.Println("Adding task:", title)
+
+	task := &Task{
+		Title:       title,
+		Completed:   false,
+		CreatedTime: time.Now(),
+	}
+
+	*t = append(*t, task)
+}
+
+func (t *Todos) list() {
+	for i, task := range *t {
+		fmt.Println(i+1, task.Title, task.Completed, task.CreatedTime)
+	}
 }
 
 func main() {
-	fmt.Println("Hello, World!")
 
-	var name string = "Sahil"
-	var age = 19
-	isGuitarist := true
+	add := flag.String("add", "", "Add a new task (e.g., -add 'My task')")
+	list := flag.Bool("list", false, "List all tasks")
+	complete := flag.Int("complete", 0, "Mark a task as completed (e.g., -complete 1)")
+	del := flag.Int("delete", 0, "Delete a task (e.g., -delete 1)")
 
-	fmt.Println(name, age, isGuitarist)
-	fmt.Println(sayHi(name))
-	fmt.Println(isPersonGuitarist(isGuitarist))
+	flag.Parse()
 
-	if practiceMonths, guitarChord := 10, "fe3f"; isGuitarist {
-		fmt.Println("Play the barrrr " + guitarChord + " chordsssss!!!!")
-		fmt.Println("Practiced for: " + strconv.Itoa(practiceMonths))
-	} else {
-		fmt.Println("go learnnnnnnn musiccccc!!!!")
+	fmt.Println("add:", *add)
+	fmt.Println("list:", *list)
+	fmt.Println("complete:", *complete)
+	fmt.Println("del:", *del)
+	fmt.Println("tail:", flag.Args())
+
+	myTodos := Todos{}
+
+	if *add != "" {
+		myTodos.add(*add)
+		myTodos.add("hello world")
 	}
 
-	switch age {
-	case 19:
-		fmt.Println("You are 19 years old")
-		fallthrough
-	case 20:
-		fmt.Println("You are 20 years old")
-	default:
-		fmt.Println("You are not 19 or 20 years old")
+	if *list {
+		myTodos.list()
 	}
 
-	items := []string{"pen", "pencil", "notebook"}
-	for index, value := range items {
-		fmt.Println(index, value)
-	}
-
-	mySlice := make([]bool, 4)
-	fmt.Printf("Len: %d, Cap: %d, Pointer: %p\n", len(mySlice), cap(mySlice), mySlice)
-	mySlice = append(mySlice, true)
-	fmt.Printf("Len: %d, Cap: %d, Pointer: %p\n", len(mySlice), cap(mySlice), mySlice)
-
-	myMap := map[string]int{
-		"pen":      1,
-		"pencil":   0,
-		"notebook": 1,
-	}
-	value, ok := myMap["fwef"]
-	fmt.Println(value, ok)
-
-	ubuu := hello{
-		name: "Sahil",
-		age:  19,
-	}
-	fmt.Println(ubuu.age)
-	fmt.Println(ubuu.name)
-
-	ubbuAdress := &ubuu
-	explorePointer(*ubbuAdress)
-	fmt.Println(*ubbuAdress)
-
-}
-
-func (data hello) greetPeople() string {
-	return "Hello " + data.name
-}
-
-func explorePointer(ptr hello) {
-	fmt.Println("insideeeeee")
-	fmt.Println(ptr.name)
-	fmt.Println(ptr.age)
-	fmt.Println(ptr.greetPeople())
-	fmt.Printf("%p\n", ptr)
-}
-
-func sayHi(name string) string {
-	return "Hi " + name
-}
-
-func isPersonGuitarist(isGuitarist bool) (string, error) {
-	if isGuitarist {
-		return "Guitarist", nil
-	}
-	return "Not a Guitarist", nil
 }
